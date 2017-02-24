@@ -56,39 +56,17 @@ public class AquariumBuilder {
      * Builds a semi-random new aquarium string.
      */
     public String build() {
-        List<String> fishes = new ArrayList<String>();
-        int fishTypeCount = random.nextInt(Chars.FISH_TYPES.size()) + 1;
-        if (fishTypeCount == Chars.FISH_TYPES.size()) {
-            fishes.addAll(Chars.FISH_TYPES);
-        } else {
-            while (fishes.size() < fishTypeCount) {
-                String fishType = random.oneOf(Chars.FISH_TYPES);
-                if (!fishes.contains(fishType)) {
-                    fishes.add(fishType);
-                }
-            }
-        }
-
-        // A rare swimmer should show up about once every 8 tweets.
-        if (random.nextInt(8) == 5) {
-            fishes.add(random.oneOf(Chars.RARE_SWIMMER_TYPES));
-        }
-
-        // There will be about 8 tweets a day. Something should be special about
-        // many of them but not all of them. Only once a week should something
-        // exceedingly rare show up. 8 tweets * 7 days = 56 tweets per week
-        boolean exceedinglyRareBottomTime = (random.nextInt(56) == 37);
-
-        // A rare bottom dweller should show up about once every 8 tweets.
-        boolean rareBottomDwellerTime = (random.nextInt(8) == 2);
+        Types types = new Types(random);
+        types.chooseTypes();
+        List<String> fishes = types.fishTypes;
 
         int maxLineLength = 10;
         List<String> bottom = new ArrayList<String>();
-        if (rareBottomDwellerTime) {
-            bottom.add(random.oneOf(Chars.RARE_BOTTOM_DWELLERS));
+        if (types.rareBottomDwellerTypes.size() >= 1) {
+            bottom.add(types.rareBottomDwellerTypes.get(0));
         }
-        if (exceedinglyRareBottomTime) {
-            bottom.add(random.oneOf(Chars.EXCEEDINGLY_RARE_JUNK));
+        if (types.exceedinglyRareBottomDwellerTypes.size() >= 1) {
+            bottom.add(types.exceedinglyRareBottomDwellerTypes.get(0));
         }
         int plantCount = midFavoringRandom(maxLineLength - bottom.size() - 1);
         if (plantCount < 1) {
